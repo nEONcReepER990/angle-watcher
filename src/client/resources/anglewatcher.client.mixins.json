@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "dev.anglewatcher.compat.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"GuiRenderStateMixin",
+		"GuiRenderStatePipFilterMixin",
+		"YACLScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
