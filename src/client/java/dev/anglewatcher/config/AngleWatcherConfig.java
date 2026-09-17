@@ -33,11 +33,12 @@ public final class AngleWatcherConfig {
 	public StripConfig headingTape = StripConfig.headingDefaults();
 	public StripConfig pitchTape = StripConfig.pitchDefaults();
 
+	/** Heading ranges use vanilla yaw: -180 = North, -90 = East, 0 = South, +90 = West. */
 	public List<RangeConfig> headingRanges = new ArrayList<>(List.of(
-			RangeConfig.of("North", 330.0, 30.0, 0x80FFAA00, true),
-			RangeConfig.of("East", 60.0, 120.0, 0x8055FFFF, true),
-			RangeConfig.of("South", 150.0, 210.0, 0x80FF5555, true),
-			RangeConfig.of("West", 240.0, 300.0, 0x8055FF55, true)
+			RangeConfig.of("North", 150.0, 210.0, 0x80FFAA00, true),
+			RangeConfig.of("East", -120.0, -60.0, 0x8055FFFF, true),
+			RangeConfig.of("South", -30.0, 30.0, 0x80FF5555, true),
+			RangeConfig.of("West", 60.0, 120.0, 0x8055FF55, true)
 	));
 
 	public List<RangeConfig> pitchRanges = new ArrayList<>(List.of(
@@ -208,7 +209,7 @@ public final class AngleWatcherConfig {
 		SIMPLE,
 		/** Rounds to a tenth of a degree, e.g. "37.4°". */
 		PRECISE,
-		/** Same as SIMPLE but formatted as a 3-digit compass code, e.g. "037°". */
+		/** Always shows a signed three-digit yaw, e.g. "+037°". */
 		DECIMAL
 	}
 
@@ -229,7 +230,7 @@ public final class AngleWatcherConfig {
 		}
 	}
 
-	/** One pinned angle drawn as a marker line on a tape. */
+	/** One pinned angle drawn as a marker line on a tape (heading pins use vanilla yaw, -180..180). */
 	public static final class PinConfig {
 		public String name = "";
 		/** The pinned angle in the tape's own convention (degrees). */
@@ -248,6 +249,7 @@ public final class AngleWatcherConfig {
 		/** @return false if the pin is unusable and should be dropped. */
 		public boolean repair() {
 			if (name == null) name = "";
+			// Vanilla yaw domain for heading pins; pitch pins are clamped to ±90 on use.
 			angle = Math.max(-180.0, Math.min(180.0, angle));
 			return true;
 		}
@@ -256,9 +258,9 @@ public final class AngleWatcherConfig {
 	/** One configurable angle range drawn as a colored band on a tape. */
 	public static final class RangeConfig {
 		public String name = "";
-		/** Inclusive start angle in degrees. */
+		/** Inclusive start angle in degrees (vanilla yaw: -180 = North). */
 		public double start = 0.0;
-		/** Inclusive end angle in degrees. */
+		/** Inclusive end angle in degrees (vanilla yaw: 0 = South). */
 		public double end = 360.0;
 		/** ARGB color, including alpha byte. */
 		public int color = 0x80FFAA00;

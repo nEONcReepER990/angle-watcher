@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayDeque;
@@ -551,8 +552,9 @@ public final class HudEditScreen extends Screen {
 		}
 		redoStack.clear();
 		pushUndo();
+		// Heading pins live in vanilla yaw (-180..180); pitch pins in ±90.
 		double clamped = selected == 0
-				? Math.floorMod((long) Math.round(angle), 360L)
+				? Mth.wrapDegrees(Math.round(angle))
 				: Math.max(-90, Math.min(90, Math.round(angle)));
 		strip.pins.add(dev.anglewatcher.config.AngleWatcherConfig.PinConfig.of(
 				Component.translatable("option.anglewatcher.editor.pin_name").getString(), clamped,
@@ -572,7 +574,7 @@ public final class HudEditScreen extends Screen {
 	}
 
 	private float currentHeading() {
-		return TapeRenderer.headingFromYaw(
+		return Mth.wrapDegrees(
 				this.minecraft != null && this.minecraft.player != null ? this.minecraft.player.getYRot() : 0.0f);
 	}
 

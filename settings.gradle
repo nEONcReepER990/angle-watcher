@@ -9,4 +9,9 @@ pluginManagement {
 	}
 }
 
+plugins {
+	// Downloads JDK 25 via Foojay when no local toolchain matches (see build.gradle).
+	id 'org.gradle.toolchains.foojay-resolver' version '1.0.0'
+}
+
 rootProject.name = 'anglewatcher'

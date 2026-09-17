@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 
 import java.util.List;
 
@@ -33,8 +34,8 @@ public final class AngleWatcherAlerts {
 		long now = System.currentTimeMillis();
 
 		if (config.headingTape.enabled && config.headingTape.alertSound != AlertSound.OFF) {
-			float heading = TapeRenderer.headingFromYaw(client.player.getYRot());
-			lastHeadingAlert = alert(client, config.headingTape, config.headingRanges, heading, now, lastHeadingAlert);
+			lastHeadingAlert = alert(client, config.headingTape, config.headingRanges,
+					Mth.wrapDegrees(client.player.getYRot()), now, lastHeadingAlert);
 		}
 		if (config.pitchTape.enabled && config.pitchTape.alertSound != AlertSound.OFF) {
 			lastPitchAlert = alert(client, config.pitchTape, config.pitchRanges, client.player.getXRot(), now, lastPitchAlert);

@@ -184,8 +184,9 @@ public final class YaclConfigScreen {
 		for (int i = 0; i < strip.pins.size(); i++) {
 			dev.anglewatcher.config.AngleWatcherConfig.PinConfig pin = strip.pins.get(i);
 			final int index = i;
-			double pMin = isHeading ? 0.0 : -90.0;
-			double pMax = isHeading ? 360.0 : 90.0;
+			// Heading pins use vanilla yaw (-180..180); pitch pins are clamped to ±90.
+			double pMin = isHeading ? -180.0 : -90.0;
+			double pMax = isHeading ? 180.0 : 90.0;
 
 			OptionGroup.Builder pinGroup = OptionGroup.createBuilder()
 					.name(Component.translatable("option.anglewatcher.pin.slot", i + 1,

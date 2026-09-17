@@ -87,7 +87,7 @@
 	"option.anglewatcher.tape.tickInterval": "Tick Interval (°)",
 	"option.anglewatcher.tape.tickInterval.tooltip": "Degrees between major ticks (5–90). Minor ticks are a third of it.",
 	"option.anglewatcher.tape.readoutFormat": "Readout Format",
-	"option.anglewatcher.tape.readoutFormat.tooltip": "Simple rounds to whole degrees, Precise keeps one decimal, Decimal always shows three digits (e.g. 037°).",
+	"option.anglewatcher.tape.readoutFormat.tooltip": "Simple rounds to whole degrees, Precise keeps one decimal, Decimal always shows a signed three-digit yaw (e.g. +037°).",
 	"option.anglewatcher.tape.showPins": "Show Angle Pins",
 
 	"option.anglewatcher.pin.slot": "Angle Pin %s (%s)",
@@ -103,7 +103,7 @@
 	"option.anglewatcher.tape.alertCooldown": "Alert Cooldown (ms)",
 	"option.anglewatcher.tape.alertCooldown.tooltip": "Minimum time between alert sounds for this tape.",
 
-	"option.anglewatcher.ranges.desc": "Angle ranges are drawn as colored bands on the tape (0° = North, clockwise; pitch: -90° = up, +90° = down). Wrap-around ranges like 330 → 30 are supported. Use Add / Remove below to manage them (up to 10 per tape).",
+	"option.anglewatcher.ranges.desc": "Angle ranges are drawn as colored bands on the tape using vanilla yaw (-180° = North, -90° = East, 0° = South, +90° = West; pitch: -90° = up, +90° = down). Wrap-around ranges like 150 → -150 are supported. Use Add / Remove below to manage them (up to 10 per tape).",
 
 	"option.anglewatcher.ranges.add": "Add Angle Range",
 	"option.anglewatcher.ranges.remove": "Remove This Range",
@@ -118,13 +118,4 @@
 	"option.anglewatcher.range.cameraLimit.tooltip": "While the view is inside this range, the camera cannot leave it (no snapping — it just holds at the boundary). Needs the Range Camera Limit master switch in the General tab or its keybind. Each range can also be toggled with its Yaw Range / Pitch Range 1–10 keybind.",
 	"option.anglewatcher.range.color": "Color (ARGB)",
 	"option.anglewatcher.range.color.tooltip": "Hex color with alpha channel, e.g. 80FFAA00. The alpha byte controls band transparency."
-	,
-
-	"command.anglewatcher.export.header": "Angle Watcher preset — share the code below:",
-	"command.anglewatcher.export.copy": "[Copy code]",
-	"command.anglewatcher.export.chat": "[Copy import command]",
-	"command.anglewatcher.export.size": "(%s characters)",
-	"command.anglewatcher.import.clipboard_empty": "Clipboard is empty — copy a share code first.",
-	"command.anglewatcher.import.invalid": "Invalid Angle Watcher share code.",
-	"command.anglewatcher.import.done": "Imported: %s heading ranges, %s pitch ranges, %s heading pins, %s pitch pins."
 }

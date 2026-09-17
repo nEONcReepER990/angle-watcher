@@ -15,8 +15,9 @@ import java.util.Locale;
  * Renders a scrolling angle tape (horizontal for heading/yaw, vertical for pitch).
  * All drawing is plain {@link GuiGraphicsExtractor} shapes and text; no textures, no mixins.
  *
- * <p>Heading convention: 0&deg; = North (yaw 180), increasing clockwise through East.
- * Pitch convention: -90&deg; = looking straight up, +90&deg; = straight down (vanilla pitch).
+ * <p>Heading convention: vanilla yaw — -180&deg; = North, -90&deg; = East, 0&deg; = South,
+ * +90&deg; = West, wrapping at ±180&deg;. Pitch convention: -90&deg; = looking straight up,
+ * +90&deg; = straight down (also vanilla).
  *
  * <p>The tape has an explicit, user-resizable pixel rectangle (see
  * {@link #layout(StripConfig, int, int)}). The 22px base design height scales text and
@@ -53,11 +54,6 @@ public final class TapeRenderer {
 		while (delta < 0) delta += 360.0;
 		while (delta >= 360.0) delta -= 360.0;
 		return delta <= span;
-	}
-
-	/** @return the compass heading (0..360, 0 = North) for a vanilla yaw. */
-	public static float headingFromYaw(float yaw) {
-		return Mth.wrapDegrees(yaw + 180.0f) + 180.0f;
 	}
 
 	/**
@@ -356,14 +352,14 @@ public final class TapeRenderer {
 	}
 
 	/**
-	 * Marks where North (0°) currently sits on the tape — the classic compass needle —
+	 * Marks where North (±180°) currently sits on the tape — the classic compass needle —
 	 * so the tape reads as a compass even when North is off-window.
 	 */
 	private void drawCardinalNeedle(GuiGraphicsExtractor graphics, StripConfig strip,
 			int x1, int y1, int x2, int y2, int length, float centerAngle, float s) {
 		float pxPerDeg = pixelsPerDegree(strip, length);
 		float window = visibleWindow(strip);
-		float delta = angleDelta(0, centerAngle);
+		float delta = angleDelta(180.0f, centerAngle);
 		if (Math.abs(delta) > window / 2.0f + 2.0f) {
 			return;
 		}
@@ -378,17 +374,19 @@ public final class TapeRenderer {
 		}
 	}
 
-	/** Cardinal letter if this degree is one, otherwise null (labels every 15° major tick). */
+	/** Cardinal letter at this yaw angle, otherwise null (labels every 15° major tick). */
 	private String cardinalOrDegree(int deg) {
+		// drawTicks scans deg = 0..359; 180 is the reachable half of the North seam.
+		// Vanilla yaw: -180/+180 = North, -90 = East, 0 = South, +90 = West.
 		return switch (deg) {
-			case 0 -> "N";
-			case 45 -> "NE";
-			case 90 -> "E";
-			case 135 -> "SE";
-			case 180 -> "S";
-			case 225 -> "SW";
-			case 270 -> "W";
-			case 315 -> "NW";
+			case 0 -> "S";
+			case 45 -> "SW";
+			case 90 -> "W";
+			case 135 -> "NW";
+			case 180 -> "N";
+			case 225 -> "NE";
+			case 270 -> "E";
+			case 315 -> "SE";
 			default -> null;
 		};
 	}
@@ -397,9 +395,9 @@ public final class TapeRenderer {
 			int x1, int y1, int x2, int y2, float centerAngle, float s) {
 		String text;
 		switch (strip.readoutFormat == null ? ReadoutFormat.SIMPLE : strip.readoutFormat) {
-			case PRECISE -> text = String.format(Locale.ROOT, "%.1f°", centerAngle);
-			case DECIMAL -> text = String.format(Locale.ROOT, "%03d°", Math.round(centerAngle) % 360);
-			default -> text = String.format(Locale.ROOT, "%d°", Math.round(centerAngle));
+		case PRECISE -> text = String.format(Locale.ROOT, "%.1f°", centerAngle);
+		case DECIMAL -> text = String.format(Locale.ROOT, "%+04d°", Math.round(centerAngle));
+		default -> text = String.format(Locale.ROOT, "%d°", Math.round(centerAngle));
 		}
 		int width = Math.round(font.width(text) * s);
 		int x = x1 + ((x2 - x1) - width) / 2;

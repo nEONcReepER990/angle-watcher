@@ -1,18 +1,14 @@
 package dev.anglewatcher;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.anglewatcher.compat.AngleWatcherShare;
 import dev.anglewatcher.config.AngleWatcherConfig;
 import dev.anglewatcher.hud.AngleWatcherAlerts;
 import dev.anglewatcher.hud.AngleWatcherCameraLimit;
 import dev.anglewatcher.hud.TapeRenderer;
 import dev.anglewatcher.screen.HudEditScreen;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.util.Mth;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -21,15 +17,11 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.resources.Identifier;
 
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
-
 /**
- * Client entrypoint: loads the config, registers the HUD elements, keybinds
- * and the {@code /anglewatcher} client command, and drives the per-frame
- * camera limit and per-tick alert sounds.
+ * Client entrypoint: loads the config, registers the HUD elements and keybinds,
+ * and drives the per-frame camera limit and per-tick alert sounds.
  */
 public final class AngleWatcherClient implements ClientModInitializer {
 	public static final String MOD_ID = "anglewatcher";
@@ -113,8 +105,6 @@ public final class AngleWatcherClient implements ClientModInitializer {
 		HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, id("heading_tape"),
 				(graphics, deltaTracker) -> render(graphics, deltaTracker));
 
-		ClientCommandRegistrationCallback.EVENT.register(AngleWatcherClient::registerCommands);
-
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (OPEN_EDITOR.consumeClick()) {
 				if (client.player != null && client.gui.screen() == null) {
@@ -143,28 +133,6 @@ public final class AngleWatcherClient implements ClientModInitializer {
 		});
 	}
 
-	private static void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher,
-			CommandBuildContext buildContext) {
-		dispatcher.register(literal("anglewatcher")
-				.then(literal("export").executes(ctx -> {
-					AngleWatcherShare.exportToChat(ctx.getSource());
-					return 1;
-				}))
-				.then(literal("import")
-						.then(literal("clipboard").executes(ctx -> {
-							AngleWatcherShare.importFromClipboard(ctx.getSource());
-							return 1;
-						}))
-						.then(com.mojang.brigadier.builder.RequiredArgumentBuilder
-								.<FabricClientCommandSource, String>argument("code", StringArgumentType.greedyString())
-								.executes(ctx -> {
-									AngleWatcherShare.importCode(
-											StringArgumentType.getString(ctx, "code"),
-											ctx.getSource().getPlayer());
-									return 1;
-								}))));
-	}
-
 	private static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
@@ -191,9 +159,8 @@ public final class AngleWatcherClient implements ClientModInitializer {
 		boolean guiOpen = client.gui.screen() != null;
 
 		if (config.headingTape.enabled && !(guiOpen && config.headingTape.hideWithGui)) {
-			float heading = TapeRenderer.headingFromYaw(client.player.getYRot());
-			HEADING_RENDERER.render(graphics, font, config.headingTape, heading, config.headingRanges,
-					screenWidth, screenHeight);
+			HEADING_RENDERER.render(graphics, font, config.headingTape, Mth.wrapDegrees(client.player.getYRot()),
+					config.headingRanges, screenWidth, screenHeight);
 		}
 
 		if (config.pitchTape.enabled && !(guiOpen && config.pitchTape.hideWithGui)) {

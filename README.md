@@ -10,12 +10,13 @@ configurable position, size, and multiple configurable **angle ranges** drawn as
 
 ## Features
 
-- **Heading tape** — a scrolling compass strip centered on your current heading
-  (0° = North, clockwise). Tick marks every 5°/15°, cardinal letters, and a numeric readout.
+- **Heading tape** — a scrolling compass strip centered on your current heading in
+  vanilla yaw (−180° = North, −90° = East, 0° = South, +90° = West). Tick marks every
+  5°/15°, cardinal letters, and a numeric readout.
 - **Pitch tape** — the same strip vertically for your look pitch (−90° = up, +90° = down).
 - **Angle ranges** — add or remove ranges freely (up to 10 per tape), each with name, start/end angle,
   ARGB color (with alpha), and an enable toggle. Ranges draw as translucent bands and
-  wrap correctly across the 0° seam (e.g. 330° → 30°).
+  wrap correctly across the ±180° seam (e.g. 150° → −150°).
 - **Angle pins** — pin up to 20 arbitrary angles per tape, drawn as named, colored marker
   lines. Add them in the config screen or with the HUD editor's pin mode (`R`).
 - **Range alerts** — optionally play a vanilla sound while the current angle is inside an
@@ -38,9 +39,6 @@ configurable position, size, and multiple configurable **angle ranges** drawn as
   ranges list (the order shown in the config screen). Turning a range on also enables
   that tape's camera-limit switch and the master switch if they are off. All keybinds are
   unbound by default — assign them in **Options → Controls → Key Binds**.
-- **Preset sharing** — `/anglewatcher export` prints your ranges and pins as a share code;
-  `/anglewatcher import <code>` (or `/anglewatcher import clipboard`) applies one.
-  Everything stays client-side.
 
 ## Requirements
 
@@ -69,9 +67,9 @@ The HUD itself (tapes, editor, keybinds, commands) works with just Fabric API.
 ./gradlew build
 ```
 
-The jar is produced at `build/libs/anglewatcher-1.0.0.jar`. Java 25 is required to build.
-If your JDK 25 is installed somewhere else, update or remove the `org.gradle.java.home`
-line in `gradle.properties`.
+The jar is produced at `build/libs/anglewatcher-1.1.0.jar`. A Java 25 toolchain
+is resolved automatically (via the Gradle Foojay resolver), so no specific local
+JDK install is required to build.
 
 ## Usage
 
@@ -98,9 +96,6 @@ line in `gradle.properties`.
    *Yaw Range 1–10* / *Pitch Range 1–10* keybinds toggle individual ranges by their
    position in the config screen's list. There are also unbound keybinds for
    *Toggle Angle Watcher Rendering* and *Toggle Range Camera Limit*.
-5. **Share a preset**: run `/anglewatcher export` to print a share code in chat (click to
-   copy), then run `/anglewatcher import <code>` or `/anglewatcher import clipboard` on
-   another install. Ranges and pins are shared; sounds and camera flags stay personal.
 
 ## License
 

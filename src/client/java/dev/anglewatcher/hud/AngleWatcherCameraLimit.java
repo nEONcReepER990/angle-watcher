@@ -22,7 +22,7 @@ import java.util.List;
 public final class AngleWatcherCameraLimit {
 	/** Which tape's ranges a toggle keybind addresses. */
 	public enum Tape {
-		/** Heading (yaw) tape — its ranges are listed in compass headings. */
+		/** Heading (yaw) tape — its ranges are listed in vanilla yaw (−180 = North, 0 = South). */
 		HEADING,
 		/** Pitch tape — its ranges are listed in vanilla pitch (−90 = up, +90 = down). */
 		PITCH
@@ -112,7 +112,7 @@ public final class AngleWatcherCameraLimit {
 		}
 		Player player = client.player;
 
-		float heading = TapeRenderer.headingFromYaw(player.getYRot());
+		float heading = Mth.wrapDegrees(player.getYRot());
 		float pitch = player.getXRot();
 
 		if (config.headingTape.enabled && tapeEnabled(config, Tape.HEADING)) {
@@ -136,10 +136,9 @@ public final class AngleWatcherCameraLimit {
 			if (!TapeRenderer.inRange(heading, range.start, range.end)) {
 				continue;
 			}
-			// Inside this range: hold the view inside it.
 			float clamped = clampCircular(heading, (float) range.start, (float) range.end);
 			if (clamped != heading) {
-				player.setYRot(yawFromHeading(clamped));
+				player.setYRot(clamped);
 			}
 			return clamped;
 		}
@@ -153,7 +152,7 @@ public final class AngleWatcherCameraLimit {
 				if (TapeRenderer.inRange(lastHeading, range.start, range.end)
 						&& !TapeRenderer.inRange(heading, range.start, range.end)) {
 					float target = nearerBoundary(heading, (float) range.start, (float) range.end);
-					player.setYRot(yawFromHeading(target));
+					player.setYRot(target);
 					return target;
 				}
 			}
@@ -211,15 +210,5 @@ public final class AngleWatcherCameraLimit {
 		delta = (delta % 360.0 + 360.0) % 360.0;
 		if (delta > 180.0) delta -= 360.0;
 		return delta;
-	}
-
-	/**
-	 * @return the yaw (vanilla) for a compass heading — inverse of {@link TapeRenderer#headingFromYaw}.
-	 * That conversion is just yaw normalized into 0..360 (the two ±180° offsets cancel), so the
-	 * inverse is a plain wrap back into vanilla's −180..180 range; subtracting 180° here would
-	 * mirror every heading to the opposite direction (negatives snapping to their positive twins).
-	 */
-	private static float yawFromHeading(float heading) {
-		return Mth.wrapDegrees(heading);
 	}
 }
