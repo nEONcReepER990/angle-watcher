@@ -46,9 +46,9 @@ configurable position, size, and multiple configurable **angle ranges** drawn as
 
 | Dependency | Version |
 |---|---|
-| Minecraft | 26.2.x |
+| Minecraft | 26.2 |
 | Fabric Loader | ≥ 0.19.5 |
-| Fabric API | 0.160.0+26.2 (any 26.2.x build) |
+| Fabric API | 0.160.0+26.2 (any 26.2 build) |
 | YACL (YetAnotherConfigLib) | 3.9.6+26.2-fabric (optional — only needed for the config screen) |
 | Mod Menu | 20.0.2 (optional — only needed for the config screen entry) |
 | Java | 25+ |
